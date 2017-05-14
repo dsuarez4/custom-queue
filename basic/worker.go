@@ -8,17 +8,18 @@ import (
 type Worker struct {
 	ID 			int
 	Work 		chan WorkRequest
-	WorkerQueue chan chan WorkRequest
+	// Keeps track of all Work channels
+	WorkerList chan chan WorkRequest
 	QuitChan 	chan bool
 }
 
-func New(id int, workerQueue chan chan WorkRequest) Worker {
+func New(id int, workerList chan chan WorkRequest) Worker {
 
 	worker := Worker{
-		ID:			 id,
-		Work: 		 make(chan WorkRequest),
-		WorkerQueue: workerQueue,
-		QuitChan: 	make(chan bool),
+		ID:          id,
+		Work:        make(chan WorkRequest),
+		WorkerList: workerList,
+		QuitChan:    make(chan bool),
 	}
 
 	return worker
@@ -27,7 +28,8 @@ func New(id int, workerQueue chan chan WorkRequest) Worker {
 func (w *Worker) Start() {
 	go func() {
 		for {
-			w.WorkerQueue <- w.Work
+			// Keep track of channel
+			w.WorkerList <- w.Work
 
 			select {
 			case work := <-w.Work:
