@@ -24,7 +24,7 @@ func distributeWork() {
 		select {
 		case work := <-WorkQueue:
 
-			fmt.Printf("Recieved work request: %s", work.Name)
+			fmt.Printf("Recieved work request: %s\n", work.Name)
 
 			go func() {
 				worker := <-WorkerList
